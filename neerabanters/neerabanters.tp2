@@ -1,0 +1,282 @@
+/*
+ * "Neera Banters" for BGEE
+ * AstroBryGuy
+ *
+*/
+
+/* Backup folder */
+BACKUP ~neerabanters/backup~
+
+AUTHOR ~AstroBryGuy~
+
+/* enable all error messages; nothing suppressed. comment this out for release version */
+//MODDER
+
+VERSION ~v0.9.1~
+
+README ~neerabanters/readme.html~
+
+ALWAYS
+	INCLUDE ~neerabanters/lib/project_macros.tpa~   /* adds macros callable by each component */
+
+	/* STATE.IDS patching - thanks, Cam, if you read it */
+	/* adds custom IsValidForPartyDialogue state */
+	APPEND ~STATE.IDS~ ~0x80101FEF CD_STATE_NOTVALID~ UNLESS ~CD_STATE_NOTVALID~
+
+	/* CPMVars */
+	ACTION_IF GAME_IS ~eet~ THEN BEGIN
+		INCLUDE ~neerabanters/lib/eet_cpmvars.tpa~
+	END ELSE BEGIN
+		INCLUDE ~neerabanters/lib/g3_bgee_cpmvars.tpa~
+	END
+END
+
+AUTO_TRA ~neerabanters/tra/%s~
+LANGUAGE ~English~ 
+	~english~ 
+	~neerabanters/tra/english/setup.tra~
+	~neerabanters/tra/english/neerabanters.tra~
+
+
+BEGIN @1 DESIGNATED 10
+  REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
+
+// Compile dialogues
+COMPILE EVALUATE_BUFFER ~neerabanters/d/ay#bneera.d~
+COMPILE EVALUATE_BUFFER ~neerabanters/d/ay#neeraint.d~
+COMPILE EVALUATE_BUFFER ~neerabanters/d/ay#redwiz.d~
+
+// Compile scripts
+EXTEND_BOTTOM ~%NEERA_BCS%.bcs~ ~neerabanters/baf/ay#neera.baf~ EVALUATE_BUFFER
+EXTEND_BOTTOM ~%DYNAHEIR_BCS%.bcs~ ~neerabanters/baf/ay#dynah.baf~ EVALUATE_BUFFER
+
+
+BEGIN @2 DESIGNATED 20
+  REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
+
+// Add more character sounds
+ACTION_IF DIRECTORY_EXISTS ~neerabanters/audio/%LANGUAGE%~ THEN BEGIN
+        COPY ~neerabanters/audio/%LANGUAGE%~ ~override~
+END ELSE BEGIN
+	COPY ~neerabanters/audio/english~ ~override~
+END
+
+ACTION_FOR_EACH neera IN neera neera2 neera4 neera6 BEGIN
+	ACTION_IF FILE_EXISTS_IN_GAME "%neera%.cre" BEGIN
+		COPY_EXISTING ~%neera%.cre~ ~override~
+			SAY MORALE @100 // Oh, sorry, sorry, sorry, sorry!
+			SAY HAPPY @101 // Fantastic!
+			SAY UNHAPPY_ANNOYED @102 // I don't think I like the way things are going here.
+			SAY UNHAPPY_SERIOUS @103 // Seriously? Not. Happy.
+			SAY UNHAPPY_BREAKING @104 // After that little display, I'm done with you.
+			SAY BATTLE_CRY2 @105 // THIS'LL BE A WILD RIDE!
+			SAY AREA_FOREST @106 // It's times like these I miss home.
+			SAY AREA_CITY @107 // Mmm, the sweet smell of sewage. Hello, city.
+			SAY AREA_DUNGEON @108 // Is it just me, or is it a little damp in here?
+			SAY INSULT @109 // Away with you, you pompous creep!
+			SAY COMPLIMENT1 @110 // You're a real pal.
+			SAY RESPONSE_TO_INSULT1 @111 // Shut up. I hate you.
+			SAY RESPONSE_TO_INSULT2 @112 // Don't care! Shut up!
+			SAY MISCELLANEOUS @113 // Thanks!
+			SAY RESPONSE_TO_COMPLIMENT2 @114 // Thanks for the vote of confidence.
+			SAY REACT_TO_DIE_GENERAL @115 // No! They can't get away with this!
+			SAY REACT_TO_DIE_SPECIFIC @115 // No! They can't get away with this!
+			SAY SPELL_DISRUPTED @116 // Nooo! My spell!
+			SAY CRITICAL_HIT @117 // Yeah!
+			SAY CRITICAL_MISS @118 // Uhh!
+		BUT_ONLY
+	END
+END
+
+// Remove extra sounds in SoD
+ACTION_IF GAME_INCLUDES ~sod~ BEGIN
+	COPY_EXISTING ~bdneera.bcs~ ~override~
+		DECOMPILE_AND_PATCH BEGIN
+			REPLACE_TEXTUALLY ~SetGlobal("bd_NewSounds","LOCALS",1)~ ~SetPlayerSound(Myself,-1,INSULT1) SetPlayerSound(Myself,-1,COMPLIMENT1) SetPlayerSound(Myself,-1,RESPONSE_TO_INSULT1) SetPlayerSound(Myself,-1,RESPONSE_TO_INSULT2) SetPlayerSound(Myself,-1,MISCELLANEOUS) SetPlayerSound(Myself,-1,RESPONSE_TO_COMPLIMENT2) SetGlobal("bd_NewSounds","LOCALS",1)~
+		END
+	BUT_ONLY
+END
+		
+
+// Neera gets specific death reactions for Imoen & Glint
+COPY_EXISTING ~death.2da~ ~override/death.2da~
+	COUNT_2DA_COLS "cnt_col"
+    COUNT_2DA_ROWS %cnt_col% "cnt_row"
+	FOR ( cnt=0; cnt<"%cnt_row%"; cnt=cnt+1 ) BEGIN
+    	READ_2DA_ENTRY "%cnt%" 0 "%cnt_col%" "npc_name"
+       	PATCH_IF ("%npc_name%" STR_EQ "NEERA") BEGIN
+       		SET_2DA_ENTRY "%cnt%" 24 "%cnt_col%" "1" // Imoen
+       		PATCH_IF (GAME_INCLUDES ~sod~) BEGIN
+       			SET_2DA_ENTRY "%cnt%" 30 "%cnt_col%" "1" // Glint
+       		END
+       	END
+    END
+BUT_ONLY
+
+COPY_EXISTING ~death.2da~ ~override/death.2da~
+	LPM remove_blank_lines
+BUT_ONLY
+
+// Add Neera to INTERACT.2DA
+COPY_EXISTING ~interact.2da~ ~override~
+	REPLACE_TEXTUALLY ~NEERA~ ~_UNUSED~
+BUT_ONLY
+
+COPY_EXISTING ~interact.2da~ ~override~
+	COUNT_2DA_COLS "cnt_col"
+	COUNT_2DA_ROWS %cnt_col% "cnt_row"
+	SPRINT new_row ~NEERA 0 0 c 0 c 0 0 c 0 c 0 0 0 i 0 c i i i i i 0 i 0~      
+	FOR ( cnt=25; cnt<"%cnt_col%"; cnt=cnt+1 ) BEGIN
+    	SPRINT new_row ~%new_row% 0~
+	END
+	SPRINT new_col "$ $ NEERA "
+	SET cnt_row = %cnt_row% + 1
+	FOR ( cnt=0; cnt<"%cnt_row%"; cnt=cnt+1 ) BEGIN
+    	SPRINT new_col ~%new_col% 0~
+    END    
+BUT_ONLY
+
+APPEND "interact.2da" "%new_row%"    
+APPEND_COL "interact.2da" "%new_col%"
+
+COPY_EXISTING ~interact.2da~ ~override~
+	COUNT_2DA_COLS "cnt_col"
+    COUNT_2DA_ROWS %cnt_col% "cnt_row"
+	SET neera_col = %cnt_col% - 1
+	FOR ( cnt=0; cnt<"%cnt_row%"; cnt=cnt+1 ) BEGIN
+    	READ_2DA_ENTRY "%cnt%" 0 "%cnt_col%" "npc_name"
+       	PATCH_IF ("%npc_name%" STR_EQ "KIVAN") BEGIN
+    		SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "ALORA") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "MINSC") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "c"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "DYNAHEIR") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "YESLICK") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "CORAN") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "c"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "AJANTIS") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "s"
+    	END
+    	PATCH_IF ("%npc_name%" STR_EQ "KHALID") BEGIN
+			SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "c"
+        END
+    	PATCH_IF ("%npc_name%" STR_EQ "JAHEIRA") BEGIN
+    		SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+		END
+        PATCH_IF ("%npc_name%" STR_EQ "GARRICK") BEGIN
+    		SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+    	END
+		PATCH_IF ("%npc_name%" STR_EQ "SAFANA") BEGIN
+			SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "FALDORN") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "BRANWEN") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "QUAYLE") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "i"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "XAN") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "SKIE") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "c"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "ELDOTH") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "XZAR") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "s"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "MONTARON") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "i"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "TIAX") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "s"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "KAGAIN") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "i"
+    	END
+        PATCH_IF ("%npc_name%" STR_EQ "SHARTEEL") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "c"
+    	END
+        PATCH_IF ("%npc_name%" STR_EQ "EDWIN") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "i"
+        END
+        PATCH_IF ("%npc_name%" STR_EQ "VICONIA") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "0"
+        END 	
+        PATCH_IF ("%npc_name%" STR_EQ "%IMOEN_DV%") BEGIN
+        	SET_2DA_ENTRY "%cnt%" "%neera_col%" "%cnt_col%" "c"
+        END 	
+	END
+	// If Imoen is added to INTERACT.2DA, flag her for compliments from Neera
+	SET neera_row = %cnt_row% - 1
+	SET imoen_col = 0
+	SET idx_cols = %cnt_col%-1
+	FOR ( cnt=0; cnt<"%idx_cols%"; cnt=cnt+1 ) BEGIN
+		READ_2DA_ENTRY 0 "%cnt%" "%idx_cols%" "npc_name"
+        PATCH_IF ("%npc_name%" STR_EQ "%IMOEN_DV%") BEGIN
+        	SET imoen_col = %cnt% + 1
+        END
+    END	
+	PATCH_IF (imoen_col > 0) BEGIN
+		SET_2DA_ENTRY "%neera_row%" "%imoen_col%" "%cnt_col%" "c"
+	END
+BUT_ONLY
+
+COPY_EXISTING ~interact.2da~ ~override~
+	PRETTY_PRINT_2DA
+BUT_ONLY
+
+COPY_EXISTING ~interact.2da~ ~override~
+	LPM remove_blank_lines
+BUT_ONLY
+
+/* Neera Banters: DLC Portraits */
+/* DLC Portrait #1 */
+BEGIN @4 DESIGNATED 30
+	SUBCOMPONENT @3  /* Neera Banters: DLC Portraits */
+  	REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
+
+COPY GLOB ~neerabanters/bmp/ay#ne1*.bmp~ ~override~
+
+ACTION_FOR_EACH neera IN neera neera2 neera4 neera6 neera7 neera8 neera10 neera12 neera13 neera15 ohb1neer BEGIN
+	ACTION_IF FILE_EXISTS_IN_GAME "%neera%.cre" BEGIN
+		COPY_EXISTING ~%neera%.CRE~ ~override~
+      		PATCH_IF (SOURCE_SIZE > 0x2d3) BEGIN // protects against invalid files
+        		WRITE_ASCIIE 0x34 ~ay#ne1m~ #8 // small portrait
+        		WRITE_ASCIIE 0x3c ~ay#ne1l~ #8 // large portrait
+        	END
+        BUT_ONLY
+    END
+END
+
+/* DLC Portrait #2 */
+BEGIN @5 DESIGNATED 31
+	SUBCOMPONENT @3  /* Neera Banters: DLC Portraits */
+  	REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
+
+COPY GLOB ~neerabanters/bmp/ay#ne2*.bmp~ ~override~
+
+ACTION_FOR_EACH neera IN neera neera2 neera4 neera6 neera7 neera8 neera10 neera12 neera13 neera15 ohb1neer BEGIN
+	ACTION_IF FILE_EXISTS_IN_GAME "%neera%.cre" BEGIN
+		COPY_EXISTING ~%neera%.CRE~ ~override~
+      		PATCH_IF (SOURCE_SIZE > 0x2d3) BEGIN // protects against invalid files
+        		WRITE_ASCIIE 0x34 ~ay#ne2m~ #8 // small portrait
+        		WRITE_ASCIIE 0x3c ~ay#ne2l~ #8 // large portrait
+        	END
+        BUT_ONLY
+    END
+END
