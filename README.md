@@ -2,9 +2,9 @@
 
 A Baldur's Gate mod by AstroBryGuy
 
-**Version 0.9.1**
+**Version 0.9.2**
 
-[https://github.com/AstroBryGuy/NeeraBanters](https://github.com/AstroBryGuy/NeeraBanters)
+[https://github.com/The-Gate-Project/NeeraBanters](https://github.com/The-Gate-Project/NeeraBanters)
 
 ## Introduction
 Do you wish Neera would interact more with her companions in Baldur's Gate: Enhanced Edition? Then this mod is for you! The Neera Banters mod adds banters between Neera and other joinable NPCs available in BGEE. There is at least one banter with every* joinable NPC _(ok, not quite **every** - there is one exception, for narrative reasons)_.
@@ -44,7 +44,7 @@ On successful extraction, you should have a neerabanters folder, setup-neerabant
 
 ## Contact Information
 
-Comments and bug reports can be directed to the [Neers Banters discussion on the Beamdog Forums](https://forums.beamdog.com/discussion/38246/neera-banters-for-bgee/). If the forums are inaccessible, you can report bugs on the [Neera Banters repository](https://github.com/AstroBryGuy/NeeraBanters) on GitHub.
+Comments and bug reports can be directed to the [Neers Banters discussion on the Beamdog Forums](https://forums.beamdog.com/discussion/38246/neera-banters-for-bgee/). If the forums are inaccessible, you can report bugs on the [Neera Banters repository](https://github.com/The-Gate-Project/NeeraBanters) on GitHub.
 
 ## Acknowledgements 
 
@@ -61,6 +61,11 @@ The .tp2 code ONLY is licensed under the Creative Commons Attribution 4.0 Intern
 All images, sounds, and game text used by this mod are copyright Beamdog or Wizards of the Coast.
 
 ## Version History
+
+Version 0.9.2
+
+* Fix the issue when Neera can't return to party after Edwin (droideck)
+* Add labels and Project Infinity metadata (Graion Dilach)
 
 Version 0.9.1
 
