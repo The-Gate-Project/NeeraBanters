@@ -39,6 +39,7 @@ LANGUAGE ~English~
 
 
 BEGIN @1 DESIGNATED 10
+  LABEL AY-NEERABANTERS-DIALOGUE
   REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
 
 // Compile dialogues
@@ -52,6 +53,7 @@ EXTEND_BOTTOM ~%DYNAHEIR_BCS%.bcs~ ~neerabanters/baf/ay#dynah.baf~ EVALUATE_BUFF
 
 
 BEGIN @2 DESIGNATED 20
+  LABEL AY-NEERABANTERS-INTERACTION
   REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
 
 // Add more character sounds
@@ -248,6 +250,7 @@ BUT_ONLY
 /* DLC Portrait #1 */
 BEGIN @4 DESIGNATED 30
 	SUBCOMPONENT @3  /* Neera Banters: DLC Portraits */
+	LABEL AY-NEERABANTERS-PORTRAIT#1
   	REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
 
 COPY GLOB ~neerabanters/bmp/ay#ne1*.bmp~ ~override~
@@ -266,6 +269,7 @@ END
 /* DLC Portrait #2 */
 BEGIN @5 DESIGNATED 31
 	SUBCOMPONENT @3  /* Neera Banters: DLC Portraits */
+	LABEL AY-NEERABANTERS-PORTRAIT#2
   	REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
 
 COPY GLOB ~neerabanters/bmp/ay#ne2*.bmp~ ~override~
