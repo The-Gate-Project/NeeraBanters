@@ -64,7 +64,8 @@ All images, sounds, and game text used by this mod are copyright Beamdog or Wiza
 
 Version 0.9.3
 
-* Russian translation thanks to Austin & Arcanecoast.ru
+* Russian translation thanks to Austin & Arcanecoast.ru.
+* Correct installation error for portraits component.
 
 Version 0.9.2
 
