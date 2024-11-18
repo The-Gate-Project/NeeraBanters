@@ -12,7 +12,7 @@ AUTHOR ~AstroBryGuy~
 /* enable all error messages; nothing suppressed. comment this out for release version */
 //MODDER
 
-VERSION ~v0.9.2~
+VERSION ~v0.9.3~
 
 README ~neerabanters/readme.html~
 
@@ -32,10 +32,16 @@ ALWAYS
 END
 
 AUTO_TRA ~neerabanters/tra/%s~
+
 LANGUAGE ~English~ 
 	~english~ 
 	~neerabanters/tra/english/setup.tra~
 	~neerabanters/tra/english/neerabanters.tra~
+
+LANGUAGE ~Russian (by Austin & Arcanecoast.ru)~ 
+	~russian~ 
+	~neerabanters/tra/russian/setup.tra~
+	~neerabanters/tra/russian/neerabanters.tra~
 
 
 BEGIN @1 DESIGNATED 10
