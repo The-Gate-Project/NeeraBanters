@@ -62,6 +62,11 @@ All images, sounds, and game text used by this mod are copyright Beamdog or Wiza
 
 ## Version History
 
+Version 0.9.3
+
+* Russian translation thanks to Austin & Arcanecoast.ru.
+* Correct installation error for portraits component.
+
 Version 0.9.2
 
 * Fix the issue when Neera can't return to party after Edwin (droideck)

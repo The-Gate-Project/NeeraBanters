@@ -12,7 +12,7 @@ AUTHOR ~AstroBryGuy~
 /* enable all error messages; nothing suppressed. comment this out for release version */
 //MODDER
 
-VERSION ~v0.9.2~
+VERSION ~v0.9.3~
 
 README ~neerabanters/readme.html~
 
@@ -32,10 +32,16 @@ ALWAYS
 END
 
 AUTO_TRA ~neerabanters/tra/%s~
+
 LANGUAGE ~English~ 
 	~english~ 
 	~neerabanters/tra/english/setup.tra~
 	~neerabanters/tra/english/neerabanters.tra~
+
+LANGUAGE ~Russian (by Austin & Arcanecoast.ru)~ 
+	~russian~ 
+	~neerabanters/tra/russian/setup.tra~
+	~neerabanters/tra/russian/neerabanters.tra~
 
 
 BEGIN @1 DESIGNATED 10
@@ -253,7 +259,9 @@ BEGIN @4 DESIGNATED 30
 	LABEL AY-NEERABANTERS-PORTRAIT#1
   	REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
 
-COPY GLOB ~neerabanters/bmp/ay#ne1*.bmp~ ~override~
+COPY ~neerabanters/bmp/ay#ne1m.bmp~ ~override~
+COPY ~neerabanters/bmp/ay#ne1l.bmp~ ~override~
+COPY ~neerabanters/bmp/ay#ne1s.bmp~ ~override~
 
 ACTION_FOR_EACH neera IN neera neera2 neera4 neera6 neera7 neera8 neera10 neera12 neera13 neera15 ohb1neer BEGIN
 	ACTION_IF FILE_EXISTS_IN_GAME "%neera%.cre" BEGIN
@@ -272,7 +280,9 @@ BEGIN @5 DESIGNATED 31
 	LABEL AY-NEERABANTERS-PORTRAIT#2
   	REQUIRE_PREDICATE GAME_IS ~bgee eet~ @0
 
-COPY GLOB ~neerabanters/bmp/ay#ne2*.bmp~ ~override~
+COPY ~neerabanters/bmp/ay#ne2m.bmp~ ~override~
+COPY ~neerabanters/bmp/ay#ne2l.bmp~ ~override~
+COPY ~neerabanters/bmp/ay#ne2s.bmp~ ~override~
 
 ACTION_FOR_EACH neera IN neera neera2 neera4 neera6 neera7 neera8 neera10 neera12 neera13 neera15 ohb1neer BEGIN
 	ACTION_IF FILE_EXISTS_IN_GAME "%neera%.cre" BEGIN
